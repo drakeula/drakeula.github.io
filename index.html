@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Pokémon Shiny Hunt Picker — Kanto→Unova</title>
+<title>Pokémon Shiny Hunt Picker - Kanto→Unova</title>
 <style>
   :root { --bg:#0b1220; --card:#111a2e; --muted:#a7b4d6; --line:#243352; --chip:#19264a; --ink:#e8eefc; }
   * { box-sizing:border-box }
@@ -30,8 +30,8 @@
 </head>
 <body>
 <div class="card">
-  <h1>🎲 Pokémon Shiny Hunt Picker</h1>
-  <p class="sub">Randomly pick a shiny-hunting spot from the first five regions (Kanto including Sevii Islands, Johto, Hoenn, Sinnoh, Unova). Includes routes and named encounter areas (e.g., Altering Cave, Giant Chasm).</p>
+  <h1>PokéMMO Shiny Hunt Picker</h1>
+  <p class="sub">Randomly pick a shiny-hunting spot from the first five regions (Kanto including Sevii Islands, Johto, Hoenn, Sinnoh, Unova)</p>
 
   <div class="row">
     <button id="roll">Pick 1</button>
@@ -65,12 +65,12 @@ const DATA = {
   Kanto: {
     routes: range(1,25).map(n=>`Route ${n}`),
     named: [
-      "Viridian Forest","Mt. Moon","Diglett's Cave","Rock Tunnel","Power Plant","Seafoam Islands","Cerulean Cave",
-      "Pokémon Tower","Safari Zone","Victory Road",
+      "Viridian Forest (Bulbasaur-Lure)","Mt. Moon (Paras-x3 Clefable-Lure)","Diglett's Cave (Diglett-x5)","Rock Tunnel (Charmeleon-Lure)","Power Plant (Pikachu-x5)","Seafoam Islands (Wartortle-Lure)","Cerulean Cave (Kadabra-x5)",
+      "Pokémon Tower (Ghastly-x3)","Safari Zone (Scyther Blissey)","Victory Road (Sandslash/Cubone-x5)",
       // Sevii Islands
-      "Kindle Road","Mt. Ember","Treasure Beach","Cape Brink","Bond Bridge","Berry Forest","Dotted Hole",
-      "Pattern Bush","Green Path","Outcast Island","Water Labyrinth","Ruin Valley","Canyon Entrance",
-      "Sevault Canyon","Tanoby Ruins","Memorial Pillar","Altering Cave","Icefall Cave","Lost Cave"
+      "Kindle Road (Meowth/Ponyta-x5)","Mt. Ember (Magcargo/Slugma-x5)","Treasure Beach (Tangela-x5)","Cape Brink (Golduck/Slowbro-x5)","Bond Bridge (Gloom-x5)","Berry Forest (Hypno-x5)",
+      "Pattern Bush (Pinsir-Lure)","Outcast Island (Dragonite-Lure)","Water Labyrinth (Corsola-Lure)","Ruin Valley (Jolteon-Lure)","Canyon Entrance (Phanphy-x3)",
+      "Sevault Canyon (Skarmory-Rare)","Tanoby Ruins","Memorial Pillar (Hoppip-Horde)","Icefall Cave (Piloswine-Horde)","Lost Cave"
     ]
   },
   Johto: {
@@ -102,11 +102,10 @@ const DATA = {
   Unova: {
     routes: range(1,23).map(n=>`Route ${n}`),
     named: [
-      "Dreamyard","Pinwheel Forest","Wellspring Cave","Mistralton Cave","Chargestone Cave",
-      "Twist Mountain","Dragonspiral Tower","Giant Chasm","Relic Castle","Desert Resort",
-      "Lostlorn Forest","Moor of Icirrus","Abundant Shrine","Village Bridge","P2 Laboratory",
-      "Celestial Tower","Virbank Complex","Floccesy Ranch","Seaside Cave","Reversal Mountain",
-      "Nature Preserve","Victory Road"
+      "Dreamyard (Munna/Liepard)","Pinwheel Forest (Snivy/Monkies)","Mistralton Cave (Boldore/Woobat)","Chargestone Cave (Joltik/Tynamo/Feroseed)",
+      "Twist Mountain (Cryogonal/Cubchoo)","Dragonspiral Tower (Drudiggon/Golett-F1/F2)","Giant Chasm (Metagross/Absol-Lure)","Relic Castle (Krokorok/Cofagrigus/Larvesta)","Desert Resort (Darumaka/Sandile/Sigilyph/Maractus)",
+      "Lostlorn Forest (Cottonee/Petlil/Venipede/Zorua)","Moor of Icirrus (Stunfisk/Palpitoad)","Abundant Shrine (Bronzong/Stantler/Vulpix)","Village Bridge (Rufflet/Vullaby)","P2 Laboratory (Frillish)",
+      "Celestial Tower (Litwick/Elgyem)","Victory Road (Deino/Durant/Mienfoo/Heatmor)"
     ]
   }
 };
@@ -119,8 +118,8 @@ function buildPool(activeRegions, opts){
   for(const r of activeRegions){
     const sect = DATA[r];
     if(!sect) continue;
-    if(opts.includeRoutes) pool = pool.concat(sect.routes.map(n=>`${n} — ${r}`));
-    if(opts.includeNamed)  pool = pool.concat(sect.named.map(n=>`${n} — ${r}`));
+    if(opts.includeRoutes) pool = pool.concat(sect.routes.map(n=>`${n} - ${r}`));
+    if(opts.includeNamed)  pool = pool.concat(sect.named.map(n=>`${n} - ${r}`));
   }
   return pool;
 }
@@ -170,7 +169,7 @@ function roll(n){
     includeNamed: namedOn.checked
   };
   const pool = buildPool([...activeRegions], opts);
-  if(pool.length===0){ resultEl.textContent="(No locations in pool — enable a region or toggle routes/named)"; return; }
+  if(pool.length===0){ resultEl.textContent="(No locations in pool - enable a region or toggle routes/named)"; return; }
 
   const picks = [];
   for(let i=0;i<n;i++){ picks.push(pick(pool)); }
