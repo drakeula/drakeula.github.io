@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pokémon Shiny Hunt Picker — Kanto→Unova</title>
+<style>
+  :root { --bg:#0b1220; --card:#111a2e; --muted:#a7b4d6; --line:#243352; --chip:#19264a; --ink:#e8eefc; }
+  * { box-sizing:border-box }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+  .card { width:min(960px,95vw); background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; box-shadow:0 8px 30px rgba(0,0,0,.35); }
+  h1 { margin:0 0 8px; font-size:1.35rem }
+  .sub { margin:0 0 14px; color:var(--muted) }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0 }
+  .chips { display:flex; gap:8px; flex-wrap:wrap }
+  .chip { border:1px solid #2a3a62; background:var(--chip); color:#cfe0ff; padding:6px 10px; border-radius:999px; cursor:pointer; user-select:none; }
+  .chip[data-active="true"] { outline:2px solid #5673ff; color:#fff }
+  button { padding:10px 14px; border-radius:10px; border:1px solid #3a4a74; background:#1a2750; color:#e8eefc; cursor:pointer }
+  button:hover { filter:brightness(1.1) }
+  .result { margin-top:8px; padding:14px; border:1px dashed #2a3a62; border-radius:12px; background:#0f1830; font-size:1.1rem; white-space:pre-wrap }
+  details { margin-top:14px; border-top:1px solid #203055; padding-top:8px }
+  details > summary { list-style:none; cursor:pointer; color:#c8d6ff; user-select:none; }
+  details > summary::-webkit-details-marker { display:none }
+  .hist { margin-top:10px; max-height:260px; overflow:auto; color:#c8d6ff }
+  .small { color:#9fb3e1; font-size:.9rem }
+  label { display:flex; gap:8px; align-items:center }
+  input[type="checkbox"] { transform:scale(1.15) }
+  .count { margin-left:auto; color:#9fb3e1; font-size:.9rem }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🎲 Pokémon Shiny Hunt Picker</h1>
+  <p class="sub">Randomly pick a shiny-hunting spot from the first five regions (Kanto including Sevii Islands, Johto, Hoenn, Sinnoh, Unova). Includes routes and named encounter areas (e.g., Altering Cave, Giant Chasm).</p>
+
+  <div class="row">
+    <button id="roll">Pick 1</button>
+    <button id="roll5">Pick 5</button>
+    <button id="copy">Copy Last</button>
+    <span class="count" id="poolCount">Pool: …</span>
+  </div>
+
+  <div class="row">
+    <div class="chips" id="regions"></div>
+  </div>
+
+  <div class="row">
+    <label><input type="checkbox" id="routesOn" checked>Include numbered routes</label>
+    <label><input type="checkbox" id="namedOn" checked>Include named places</label>
+  </div>
+
+  <div class="result" id="result">Click “Pick 1” to begin.</div>
+
+  <!-- Collapsible history -->
+  <details id="histWrap">
+    <summary>History (<span id="histCount">0</span>)</summary>
+    <div class="hist" id="history"></div>
+  </details>
+
+  <p class="small">Want version filters (FRLG/Sevii, Platinum extras, BW vs B2W2), encounter types (grass/cave/water/fishing), or HM-free options? Say the word.</p>
+</div>
+
+<script>
+// ---------------------- DATA ----------------------
+const DATA = {
+  Kanto: {
+    routes: range(1,25).map(n=>`Route ${n}`),
+    named: [
+      "Viridian Forest","Mt. Moon","Diglett's Cave","Rock Tunnel","Power Plant","Seafoam Islands","Cerulean Cave",
+      "Pokémon Tower","Safari Zone","Victory Road",
+      // Sevii Islands
+      "Kindle Road","Mt. Ember","Treasure Beach","Cape Brink","Bond Bridge","Berry Forest","Dotted Hole",
+      "Pattern Bush","Green Path","Outcast Island","Water Labyrinth","Ruin Valley","Canyon Entrance",
+      "Sevault Canyon","Tanoby Ruins","Memorial Pillar","Altering Cave","Icefall Cave","Lost Cave"
+    ]
+  },
+  Johto: {
+    routes: range(29,48).map(n=>`Route ${n}`),
+    named: [
+      "Dark Cave","Sprout Tower","Union Cave","Slowpoke Well","Ilex Forest","Ruins of Alph",
+      "National Park","Mt. Mortar","Whirl Islands","Burned Tower","Bell Tower","Ice Path",
+      "Mt. Silver (Exteriors)","Mt. Silver Cave","Cliff Cave","Route 47 Cliffs","Route 48 Meadow","Safari Zone (HGSS)"
+    ]
+  },
+  Hoenn: {
+    routes: range(101,134).map(n=>`Route ${n}`),
+    named: [
+      "Petalburg Woods","Rusturf Tunnel","Granite Cave","Fiery Path","Jagged Pass","Meteor Falls",
+      "Scorched Slab","Safari Zone","Abandoned Ship","New Mauville","Mt. Pyre (Exterior)","Mt. Pyre (Summit)","Mt. Pyre (Interior)",
+      "Shoal Cave","Seafloor Cavern","Cave of Origin","Sky Pillar","Victory Road",
+      "Mirage Tower","Desert Underpass"
+    ]
+  },
+  Sinnoh: {
+    routes: range(201,230).map(n=>`Route ${n}`),
+    named: [
+      "Ravaged Path","Oreburgh Gate","Oreburgh Mine","Eterna Forest","Old Chateau","Mt. Coronet (Various)",
+      "Wayward Cave","Fuego Ironworks","Iron Island","Great Marsh","Trophy Garden",
+      "Solaceon Ruins","Sendoff Spring","Turnback Cave","Spring Path","Lake Verity","Lake Valor",
+      "Lake Acuity","Snowpoint Temple Exterior","Victory Road"
+    ]
+  },
+  Unova: {
+    routes: range(1,23).map(n=>`Route ${n}`),
+    named: [
+      "Dreamyard","Pinwheel Forest","Wellspring Cave","Mistralton Cave","Chargestone Cave",
+      "Twist Mountain","Dragonspiral Tower","Giant Chasm","Relic Castle","Desert Resort",
+      "Lostlorn Forest","Moor of Icirrus","Abundant Shrine","Village Bridge","P2 Laboratory",
+      "Celestial Tower","Virbank Complex","Floccesy Ranch","Seaside Cave","Reversal Mountain",
+      "Nature Preserve","Victory Road"
+    ]
+  }
+};
+
+// ---------------------- UTIL ----------------------
+function range(a,b){ return Array.from({length:b-a+1},(_,i)=>a+i); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+function buildPool(activeRegions, opts){
+  let pool = [];
+  for(const r of activeRegions){
+    const sect = DATA[r];
+    if(!sect) continue;
+    if(opts.includeRoutes) pool = pool.concat(sect.routes.map(n=>`${n} — ${r}`));
+    if(opts.includeNamed)  pool = pool.concat(sect.named.map(n=>`${n} — ${r}`));
+  }
+  return pool;
+}
+
+// ---------------------- UI ----------------------
+const regionBox = document.getElementById("regions");
+const resultEl   = document.getElementById("result");
+const historyEl  = document.getElementById("history");
+const histCount  = document.getElementById("histCount");
+const routesOn   = document.getElementById("routesOn");
+const namedOn    = document.getElementById("namedOn");
+const countEl    = document.getElementById("poolCount");
+
+let activeRegions = new Set(Object.keys(DATA));
+let totalHistory = 0;
+
+renderRegionChips();
+updateCount();
+updateHistCount();
+
+routesOn.addEventListener("change", updateCount);
+namedOn.addEventListener("change", updateCount);
+document.getElementById("roll").onclick = ()=> roll(1);
+document.getElementById("roll5").onclick = ()=> roll(5);
+document.getElementById("copy").onclick = copyLast;
+
+function renderRegionChips(){
+  regionBox.innerHTML = "";
+  Object.keys(DATA).forEach(r=>{
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.dataset.active = "true";
+    chip.textContent = `✓ ${r}`;
+    chip.onclick = ()=>{
+      if(activeRegions.has(r)){ activeRegions.delete(r); chip.dataset.active="false"; chip.textContent=`○ ${r}`; }
+      else { activeRegions.add(r); chip.dataset.active="true"; chip.textContent=`✓ ${r}`; }
+      updateCount();
+    };
+    regionBox.appendChild(chip);
+  });
+}
+
+let lastText = "";
+function roll(n){
+  const opts = {
+    includeRoutes: routesOn.checked,
+    includeNamed: namedOn.checked
+  };
+  const pool = buildPool([...activeRegions], opts);
+  if(pool.length===0){ resultEl.textContent="(No locations in pool — enable a region or toggle routes/named)"; return; }
+
+  const picks = [];
+  for(let i=0;i<n;i++){ picks.push(pick(pool)); }
+  lastText = picks.join("\n");
+  resultEl.textContent = picks.join("  |  ");
+  for(const p of picks.slice().reverse()){
+    const row = document.createElement("div"); 
+    row.textContent = "• " + p; 
+    historyEl.prepend(row);
+    totalHistory++;
+  }
+  updateHistCount();
+  updateCount(pool.length);
+}
+
+async function copyLast(){
+  try {
+    await navigator.clipboard.writeText(lastText || "");
+    const btn = document.getElementById("copy"); const old = btn.textContent;
+    btn.textContent = "Copied!"; setTimeout(()=>btn.textContent=old, 900);
+  } catch { alert("Copy failed"); }
+}
+
+function updateHistCount(){
+  histCount.textContent = String(totalHistory);
+}
+
+function updateCount(precomputed){
+  const opts = {
+    includeRoutes: routesOn.checked,
+    includeNamed: namedOn.checked
+  };
+  const poolLen = precomputed ?? buildPool([...activeRegions], opts).length;
+  countEl.textContent = `Pool: ${poolLen} spots`;
+}
+</script>
+</body>
+</html>
