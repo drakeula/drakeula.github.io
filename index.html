@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Pokémon Shiny Hunt Picker - Kanto→Unova</title>
+<title>Pokémon Shiny Hunt Randomizer - Kanto→Unova</title>
 <style>
   :root { --bg:#0b1220; --card:#111a2e; --muted:#a7b4d6; --line:#243352; --chip:#19264a; --ink:#e8eefc; }
   * { box-sizing:border-box }
@@ -30,7 +30,7 @@
 </head>
 <body>
 <div class="card">
-  <h1>PokéMMO Shiny Hunt Picker</h1>
+  <h1>PokéMMO Shiny Hunt Randomizer</h1>
   <p class="sub">Randomly pick a shiny-hunting spot from the first five regions (Kanto including Sevii Islands, Johto, Hoenn, Sinnoh, Unova)</p>
 
   <div class="row">
@@ -63,35 +63,51 @@
 // ---------------------- DATA ----------------------
 const DATA = {
   Kanto: {
-    routes: range(1,25).map(n=>`Route ${n}`),
+    routes:[
+      "Route 1 (Pichu-Lure / Pikachu-VeryRare)","Route 3 (Charmander-Lure)","Route 4 (Igglybuff-Lure)","Route 5 (Ivysaur-Lure / Mankey)","Route 6 (Magnemite / Drowzee-Night)","Route 7 (Vulpix-Morning / Hourdour-Night / Growlithe-Day)","Route 8 (Growlithe-Morn+Day / Vulpix-Morn+Night )","Route 10 (Magnemite / Voltorb)",
+      "Route 11 (Drowzee)","Route 12 (Slowpoke / Venonat/ Krabby-Rare)","Route 13 (Bellsprout / Oddish / Farfetche'd-Rare)","Route 14 (Nidorina)","Route 15 (Nidorino)","Route 16 (Grimer / Snorlax-Lure)","Route 19 (Lapras-Lure)","Route 20 (Lapras-Lure)",
+      "Route 21 (Mr.Mime-Rare / Mime Jr-Lure)","Route 23 (Arbok / Primeape / Exeggutor-Lure)","Route 24 (Squirtle-Lure / Starmie-Lure)"
+    ],
     named: [
-      "Viridian Forest (Bulbasaur-Lure)","Mt. Moon (Paras-x3 Clefable-Lure)","Diglett's Cave (Diglett-x5)","Rock Tunnel (Charmeleon-Lure)","Power Plant (Pikachu-x5)","Seafoam Islands (Wartortle-Lure)","Cerulean Cave (Kadabra-x5)",
-      "Pokémon Tower (Ghastly-x3)","Safari Zone (Scyther Blissey)","Victory Road (Sandslash/Cubone-x5)",
+      "Viridian Forest (Bulbasaur-Lure)","Mt. Moon (Paras / Clefable-Lure)","Diglett's Cave (Diglett)","Rock Tunnel (Charmeleon-Lure)","Power Plant (Pikachu)","Seafoam Islands (Wartortle-Lure)","Cerulean Cave (Kadabra)",
+      "Pokémon Tower (Ghastly)","Safari Zone (Scyther / Blissey)","Victory Road (Sandslash / Cubone / Hitmons-Lure)",
       // Sevii Islands
-      "Kindle Road (Meowth/Ponyta-x5)","Mt. Ember (Magcargo/Slugma-x5)","Treasure Beach (Tangela-x5)","Cape Brink (Golduck/Slowbro-x5)","Bond Bridge (Gloom-x5)","Berry Forest (Hypno-x5)",
-      "Pattern Bush (Pinsir-Lure)","Outcast Island (Dragonite-Lure)","Water Labyrinth (Corsola-Lure)","Ruin Valley (Jolteon-Lure)","Canyon Entrance (Phanphy-x3)",
-      "Sevault Canyon (Skarmory-Rare)","Tanoby Ruins","Memorial Pillar (Hoppip-Horde)","Icefall Cave (Piloswine-Horde)","Lost Cave"
+      "Kindle Road (Meowth / Ponyta)","Mt. Ember (Magcargo / Slugma)","Treasure Beach (Tangela)","Cape Brink (Golduck / Slowbro)","Bond Bridge (Gloom)","Berry Forest (Hypno)",
+      "Pattern Bush (Pinsir-Lure)","Outcast Island (Dragonite-Lure)","Water Labyrinth (Corsola-Lure)","Ruin Valley (Jolteon-Lure)","Canyon Entrance (Phanphy)",
+      "Sevault Canyon (Skarmory-Rare)","Memorial Pillar (Hoppip)","Icefall Cave (Piloswine-Horde)","Lost Cave (Murkrow-Night / Misdreavus-Night / Haunter)"
     ]
   },
   Johto: {
-    routes: range(29,48).map(n=>`Route ${n}`),
+    routes:  [
+      "Route 29 (Cleffa-Lure)","Route 31 (Chikorita-Lure)","Route 32 (Totodile-Lure)","Route 33 (Cyndaquil-Lure)","Route 34 (Togepi-Lure / Starmie-Lure)","Route 36 (Umbreon-Lure / Growlithe-Day / Vulpix-Night)","Route 37 (Scyther-Lure)",
+      "Route 40 (Shuckle-Rocks)","Route 42 (Mankey / Mareep)","Route 43 (Flaaffy / Girafarig)","Route 44 (Lickitung / Mr.Mime-Lure)","Route 45 (Gligar / Graveler / Quilava-Lure)","Route 47 (Chansey-Lure / Ditto-VCommon)","Route 48 (Bayleef-Lure)"
+    ],
     named: [
-      "Dark Cave","Sprout Tower","Union Cave","Slowpoke Well","Ilex Forest","Ruins of Alph",
-      "National Park","Mt. Mortar","Whirl Islands","Burned Tower","Bell Tower","Ice Path",
-      "Mt. Silver (Exteriors)","Mt. Silver Cave","Cliff Cave","Route 47 Cliffs","Route 48 Meadow","Safari Zone (HGSS)"
+      "Dark Cave (Wobbuffet)","Union Cave (Tyrogue-Lure)","Slowpoke Well (What do you think is here lmao)","Ilex Forest (Bonsly-Lure)","Ruins of Alph (Espeon-Lure)",
+      "National Park (Pinsir-Lure / Sunkern-Day / Spinarak-Night / Ledyba-Morning)","Mt. Mortar (Snorlax-Lure)","Burned Tower (Koffing-100%)","Ice Path (Jynx)",
+      "Mt. Silver (Poliwhirl / Donphan / Dodrio)","Mt. Silver Cave (Larvitar / Ursaring / Quagsire)","Safari Zone (Good luck Soldier :prayge:)"
     ]
   },
   Hoenn: {
-    routes: range(101,134).map(n=>`Route ${n}`),
+    routes: [
+      "Route 102 (Marill)","Route 104 (Mudkip-Lure)","Route 108 (Pelipper / Wingull)","Route 110 (Electrike)",
+      "Route 111 (Trapinch / Sandshrew / Cacnea)","Route 112 (Numel / Torchic-Lure)","Route 113 (Spinda)","Route 114 (Seedot / Zangoose / Lotad / Seviper / Combusken-Lure)","Route 116 (Skitty-Rare / Delcatty-Lure)","Route 117 (Roselia / Illumise)","Route 119 (Feebas)","Route 120 (Absol-Rare / Marshtomp-Lure)",
+      "Route 123 (Vigoroth-Lure)",
+      
+    ],
     named: [
-      "Petalburg Woods","Rusturf Tunnel","Granite Cave","Fiery Path","Jagged Pass","Meteor Falls",
-      "Scorched Slab","Safari Zone","Abandoned Ship","New Mauville","Mt. Pyre (Exterior)","Mt. Pyre (Summit)","Mt. Pyre (Interior)",
-      "Shoal Cave","Seafloor Cavern","Cave of Origin","Sky Pillar","Victory Road",
-      "Mirage Tower","Desert Underpass"
+      "Petalburg Woods (Shroomish-Uncommon / Slakoth-Rare / Treecko-Lure)","Granite Cave (Mawile / Sableye / Makuhita / Aron)","Fiery Path (Torkoal / Numel)","Jagged Pass (Sudowoodo-lure / Spoink)","Meteor Falls (Beldum-Lure / Bagon)",
+      "Safari Zone (glgl [Master Ball])","New Mauville (Voltorb / Magnemite)","Mt. Pyre (Vulpix / Meditite)","Mt. Pyre (Duskull / Shuppet)",
+      "Shoal Cave (Sealo)","UnderWater (Clamperl / Lanturn)","Sky Pillar (Altaria / Banette / Claydol / Mawile / Sableye)","Victory Road (Hariyama / Medicham)",
+      ,"Desert Underpass (Ditto-Common)"
     ]
   },
   Sinnoh: {
-    routes: range(201,230).map(n=>`Route ${n}`),
+    routes: [
+      "Route 201 (Mime Jr.-Lure)","Route 203 (Eevee-Lure)","Route 204","Route 205","Route 206","Route 207","Route 208","Route 209","Route 210 (Swablu / Breloom-Lure / Scyther-Rare / Mr. Mime-Rare / Sudowoodo-Rare)",
+      "Route 211","Route 212","Route 213","Route 214","Route 215","Route 216","Route 217","Route 218","Route 219","Route 220",
+      "Route 221","Route 222","Route 223","Route 224","Route 225","Route 226","Route 227","Route 228","Route 229","Route 230"
+    ],
     named: [
       "Ravaged Path","Oreburgh Gate","Oreburgh Mine","Eterna Forest","Old Chateau","Mt. Coronet (Various)",
       "Wayward Cave","Fuego Ironworks","Iron Island","Great Marsh","Trophy Garden",
@@ -100,12 +116,15 @@ const DATA = {
     ]
   },
   Unova: {
-    routes: range(1,23).map(n=>`Route ${n}`),
+    routes: [
+      "Route 1","Route 2","Route 3","Route 4","Route 5","Route 6","Route 7","Route 8","Route 9","Route 10",
+      "Route 11","Route 12","Route 13","Route 14","Route 15","Route 16","Route 17","Route 18","Route 19","Route 20",
+      "Route 21","Route 22","Route 23"],
     named: [
-      "Dreamyard (Munna/Liepard)","Pinwheel Forest (Snivy/Monkies)","Mistralton Cave (Boldore/Woobat)","Chargestone Cave (Joltik/Tynamo/Feroseed)",
-      "Twist Mountain (Cryogonal/Cubchoo)","Dragonspiral Tower (Drudiggon/Golett-F1/F2)","Giant Chasm (Metagross/Absol-Lure)","Relic Castle (Krokorok/Cofagrigus/Larvesta)","Desert Resort (Darumaka/Sandile/Sigilyph/Maractus)",
-      "Lostlorn Forest (Cottonee/Petlil/Venipede/Zorua)","Moor of Icirrus (Stunfisk/Palpitoad)","Abundant Shrine (Bronzong/Stantler/Vulpix)","Village Bridge (Rufflet/Vullaby)","P2 Laboratory (Frillish)",
-      "Celestial Tower (Litwick/Elgyem)","Victory Road (Deino/Durant/Mienfoo/Heatmor)"
+      "Dreamyard (Munna-Common / Liepard)","Pinwheel Forest (Snivy / Monkies)","Mistralton Cave (Boldore / Woobat)","Chargestone Cave (Joltik / Tynamo / Feroseed)",
+      "Twist Mountain (Cryogonal / Cubchoo)","Dragonspiral Tower (Drudiggon / Golett)","Giant Chasm (Metagross-Lure / Absol-Lure)","Relic Castle (Krokorok / Cofagrigus / Larvesta)","Desert Resort (Darumaka / Sandile/ Sigilyph / Maractus)",
+      "Lostlorn Forest (Cottonee / Petlil / Venipede / Zorua)","Moor of Icirrus (Stunfisk / Palpitoad)","Abundant Shrine (Bronzong / Stantler / Vulpix)","Village Bridge (Rufflet / Vullaby)","Driftveil City (Frillish)",
+      "Celestial Tower (Litwick / Elgyem)","Victory Road (Deino / Durant /Mienfoo / Heatmor)"
     ]
   }
 };
